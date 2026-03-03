@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "23698610260",
+    "project_id": "myzo-1ae02",
+    "storage_bucket": "myzo-1ae02.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23698610260:android:e197536c1fde7f9ff8b5c1",
+        "android_client_info": {
+          "package_name": "com.sabil.myzo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNlkXAi1FoUXpxwFc3_JmVJtf57ei5yGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
