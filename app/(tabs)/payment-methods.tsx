@@ -7,15 +7,15 @@ import { useRouter } from "expo-router";
 import React from "react";
 import {
   Linking,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const DODO_PAYMENTS_URL =
-  "https://test.checkout.dodopayments.com/buy/pdt_0NXlidWhtXLoHiO2PwrTI?quantity=1&redirect_url=https://myzobackend.vercel.app/payment/return";
+  "https://live.checkout.dodopayments.com/buy/pdt_0NXgG1Abo7Esjd8sBznXB?quantity=1&redirect_url=https://myzobackend.vercel.app/payment/return";
 
 export default function PaymentMethodsScreen() {
   const router = useRouter();

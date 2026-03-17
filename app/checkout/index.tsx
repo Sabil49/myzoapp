@@ -14,6 +14,7 @@ import { AddressCard } from "@/components/checkout/AddressCard";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Typography } from "@/components/ui/Typography";
+import { API_URL } from "@/constants/config";
 import { COLORS, SPACING } from "@/constants/theme";
 import type { RootState } from "@/store";
 import { useAppSelector } from "@/store/hooks";
@@ -24,19 +25,19 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Linking,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
@@ -215,7 +216,7 @@ export default function CheckoutScreen() {
       console.log("[Checkout] Order created:", result.order.id);
 
       const response = await fetch(
-        "https://myzobackend.vercel.app/api/payments/dodo/create-checkout",
+        `${API_URL}/api/payments/dodo/create-checkout`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -240,10 +241,16 @@ export default function CheckoutScreen() {
     } catch (err: any) {
       console.error("[Checkout] Error:", err);
 
-      const raw: string =
+      let raw: string =
         err?.data?.error ??
         err?.message ??
         "Unable to start payment. Please try again.";
+
+      // Detect backend Dodo unauthorized
+      if (err?.status === 401 || /Unauthorized|unauthorized/i.test(raw)) {
+        raw =
+          "Payment provider unauthorized. Please verify your Dodo live API key/secret in backend environment variables and restart the server.";
+      }
 
       // Show inline for stock errors — keeps the user on this screen
       const isStock = /stock|insufficient|only has/i.test(raw);
