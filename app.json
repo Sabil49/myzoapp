@@ -1,7 +1,6 @@
-// app.json
 {
   "expo": {
-    "name": "myzo",
+    "name": "myzopurse",
     "slug": "myzo",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,11 +9,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sabil.myzo",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.sabil.myzo",
-      "versionCode": 2,
+      "versionCode": 4,
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -23,7 +26,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
@@ -56,12 +62,12 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {
-        "origin": false
-      },
+      "router": {},
+      "expoprojectId": "ed0ed283-8531-4915-bd4b-ada199c06637",
       "eas": {
-        "projectId": "7cfd3318-ca3a-43b7-8dc6-e6c4ba38140e"
+        "projectId": "ed0ed283-8531-4915-bd4b-ada199c06637"
       }
-    }
+    },
+    "owner": "sabil10"
   }
 }
