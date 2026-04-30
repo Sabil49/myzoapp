@@ -2,11 +2,13 @@
 import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
 import { COLORS, SPACING } from "@/constants/theme";
+import api from "@/services/api";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+    Alert,
     SafeAreaView,
     ScrollView,
     StyleSheet,
@@ -38,6 +40,7 @@ const menuItems: MenuItem[] = [
 export default function AccountScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [deleting, setDeleting] = useState(false);
   const user = useAppSelector((state: any) =>
     typeof state?.auth === "object" &&
     state.auth !== null &&
@@ -57,6 +60,49 @@ export default function AccountScreen() {
   const handleLogout = () => {
     dispatch(logout());
     router.replace("/auth/login");
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: () => {
+            confirmDeleteAccount();
+          },
+          style: "destructive",
+        },
+      ],
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await api.delete("/api/auth/account");
+      Alert.alert(
+        "Account Deleted",
+        "Your account has been successfully deleted.",
+      );
+      dispatch(logout());
+      router.replace("/auth/login");
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      Alert.alert(
+        "Error",
+        error.response?.data?.message ||
+          "Failed to delete account. Please try again.",
+      );
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const handleMenuPress = (route: string) => {
@@ -147,6 +193,17 @@ export default function AccountScreen() {
           <Button onPress={handleLogout} variant="ghost" fullWidth>
             Sign Out
           </Button>
+          <Button
+            onPress={handleDeleteAccount}
+            variant="ghost"
+            fullWidth
+            disabled={deleting}
+            style={styles.deleteButton}
+          >
+            <Typography variant="body" style={styles.deleteButtonText}>
+              Delete Account
+            </Typography>
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -210,6 +267,12 @@ const styles = StyleSheet.create({
   logoutSection: {
     padding: SPACING.lg,
     marginTop: SPACING.xl,
+  },
+  deleteButton: {
+    marginTop: SPACING.md,
+  },
+  deleteButtonText: {
+    color: "#D32F2F",
   },
   unauthContainer: {
     flex: 1,

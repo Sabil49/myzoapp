@@ -1,16 +1,17 @@
 // app/(tabs)/support.tsx
 import { Typography } from "@/components/ui/Typography";
 import { COLORS, SPACING } from "@/constants/theme";
+import { useAppSelector } from "@/store/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Linking,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    Linking,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface FAQ {
@@ -30,8 +31,16 @@ interface ContactMethod {
 
 export default function SupportScreen() {
   const router = useRouter();
+  const isAuthenticated = useAppSelector((state: any) =>
+    typeof state?.auth === "object" &&
+    state.auth !== null &&
+    "isAuthenticated" in state.auth
+      ? state.auth.isAuthenticated
+      : false,
+  );
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
+  // Allow unauthenticated access but show message for account-specific features
   const faqs: FAQ[] = [
     {
       id: "1",

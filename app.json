@@ -28,6 +28,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
+        "android.permission.RECORD_AUDIO",
         "android.permission.RECORD_AUDIO"
       ]
     },
@@ -68,6 +69,12 @@
         "projectId": "ed0ed283-8531-4915-bd4b-ada199c06637"
       }
     },
-    "owner": "sabil10"
+    "owner": "sabil10",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ed0ed283-8531-4915-bd4b-ada199c06637"
+    }
   }
 }

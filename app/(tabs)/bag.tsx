@@ -19,8 +19,8 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 export default function BagScreen() {
@@ -28,6 +28,46 @@ export default function BagScreen() {
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const cartItems = useAppSelector((state) => state.cart.items);
+  const isAuthenticated = useAppSelector((state: any) =>
+    typeof state?.auth === "object" &&
+    state.auth !== null &&
+    "isAuthenticated" in state.auth
+      ? state.auth.isAuthenticated
+      : false,
+  );
+
+  // Require authentication for accessing cart
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Typography variant="h2">Shopping Bag</Typography>
+        </View>
+        <View style={styles.emptyContainer}>
+          <Ionicons name="bag-outline" size={80} color={COLORS.espresso[300]} />
+          <Typography variant="h3" style={styles.emptyTitle}>
+            Sign in to view your bag
+          </Typography>
+          <Typography variant="body" style={styles.emptyText}>
+            Create an account or sign in to add items to your cart and checkout
+          </Typography>
+          <Button
+            onPress={() => router.push("/auth/login")}
+            style={styles.shopButton}
+          >
+            Sign In
+          </Button>
+          <Button
+            onPress={() => router.push("/auth/register")}
+            variant="secondary"
+            style={styles.shopButton}
+          >
+            Create Account
+          </Button>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handleRemoveItem = (id: string) => dispatch(removeFromCart(id));
   const handleUpdateQuantity = (id: string, qty: number) => {

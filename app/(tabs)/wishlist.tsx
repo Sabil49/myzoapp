@@ -1,21 +1,22 @@
 // app/(tabs)/wishlist.tsx
 import { ProductCard } from "@/components/products/ProductCard";
+import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
 import { COLORS, SPACING } from "@/constants/theme";
 import api from "@/services/api";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { toggleWishlist } from "@/store/slices/wishlistSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  SafeAreaView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    FlatList,
+    RefreshControl,
+    SafeAreaView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface Product {
@@ -32,9 +33,53 @@ interface Product {
 export default function WishlistScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector((state: any) =>
+    typeof state?.auth === "object" &&
+    state.auth !== null &&
+    "isAuthenticated" in state.auth
+      ? state.auth.isAuthenticated
+      : false,
+  );
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Require authentication
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Typography variant="h2">Wishlist</Typography>
+        </View>
+        <View style={styles.emptyContainer}>
+          <Ionicons
+            name="heart-outline"
+            size={80}
+            color={COLORS.espresso[300]}
+          />
+          <Typography variant="h3" style={styles.emptyTitle}>
+            Sign in to save your favorites
+          </Typography>
+          <Typography variant="body" style={styles.emptyText}>
+            Create an account or sign in to build your wishlist
+          </Typography>
+          <Button
+            onPress={() => router.push("/auth/login")}
+            style={styles.authButton}
+          >
+            Sign In
+          </Button>
+          <Button
+            onPress={() => router.push("/auth/register")}
+            variant="secondary"
+            style={styles.authButton}
+          >
+            Create Account
+          </Button>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const fetchWishlist = useCallback(async () => {
     try {
@@ -244,5 +289,9 @@ const styles = StyleSheet.create({
   productCardWrapper: {
     flex: 1,
     padding: SPACING.xs,
+  },
+  authButton: {
+    minWidth: 200,
+    marginBottom: SPACING.md,
   },
 });

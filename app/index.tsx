@@ -21,17 +21,18 @@ export default function Index() {
   console.log("Index - isAuthenticated:", isAuthenticated);
   console.log("Index - user:", user);
 
-  if (!isAuthenticated) {
-    console.log("Not authenticated, redirecting to login");
-    return <Redirect href="/auth/login" />;
+  // Route based on role if authenticated
+  if (isAuthenticated) {
+    if (user?.role === "ADMIN") {
+      console.log("Admin user, redirecting to admin");
+      return <Redirect href="/admin" />;
+    }
+
+    console.log("Authenticated customer user, redirecting to tabs");
+    return <Redirect href="/(tabs)" />;
   }
 
-  // Route based on role
-  if (user?.role === "ADMIN") {
-    console.log("Admin user, redirecting to admin");
-    return <Redirect href="/admin" />;
-  }
-
-  console.log("Customer user, redirecting to tabs");
+  // Guest users can browse products in tabs
+  console.log("Guest user, allowing access to browse products");
   return <Redirect href="/(tabs)" />;
 }

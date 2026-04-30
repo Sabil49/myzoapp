@@ -3,18 +3,19 @@ import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
 import { COLORS, SPACING } from "@/constants/theme";
 import api from "@/services/api";
+import { useAppSelector } from "@/store/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    RefreshControl,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface Address {
@@ -32,9 +33,53 @@ interface Address {
 
 export default function AddressesScreen() {
   const router = useRouter();
+  const isAuthenticated = useAppSelector((state: any) =>
+    typeof state?.auth === "object" &&
+    state.auth !== null &&
+    "isAuthenticated" in state.auth
+      ? state.auth.isAuthenticated
+      : false,
+  );
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Require authentication
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Typography variant="h2">Addresses</Typography>
+        </View>
+        <View style={styles.emptyContainer}>
+          <Ionicons
+            name="location-outline"
+            size={80}
+            color={COLORS.espresso[300]}
+          />
+          <Typography variant="h3" style={styles.emptyTitle}>
+            Sign in to manage addresses
+          </Typography>
+          <Typography variant="body" style={styles.emptyText}>
+            Create an account or sign in to save your delivery addresses
+          </Typography>
+          <Button
+            onPress={() => router.push("/auth/login")}
+            style={styles.authButton}
+          >
+            Sign In
+          </Button>
+          <Button
+            onPress={() => router.push("/auth/register")}
+            variant="secondary"
+            style={styles.authButton}
+          >
+            Create Account
+          </Button>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const fetchAddresses = useCallback(async () => {
     try {
@@ -303,6 +348,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: COLORS.text.muted,
     textAlign: "center",
+    marginBottom: SPACING.xl,
   },
   addressList: {
     padding: SPACING.lg,
@@ -354,5 +400,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     backgroundColor: COLORS.surface,
+  },
+  authButton: {
+    minWidth: 200,
+    marginBottom: SPACING.md,
   },
 });

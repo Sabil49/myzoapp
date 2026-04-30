@@ -1,19 +1,20 @@
 // app/(tabs)/notifications.tsx
 import { Typography } from "@/components/ui/Typography";
 import { COLORS, SPACING } from "@/constants/theme";
+import { useAppSelector } from "@/store/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Linking,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Switch,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 interface NotificationSetting {
@@ -27,6 +28,13 @@ interface NotificationSetting {
 
 export default function NotificationsScreen() {
   const router = useRouter();
+  const isAuthenticated = useAppSelector((state: any) =>
+    typeof state?.auth === "object" &&
+    state.auth !== null &&
+    "isAuthenticated" in state.auth
+      ? state.auth.isAuthenticated
+      : false,
+  );
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<NotificationSetting[]>([
     {
@@ -149,6 +157,57 @@ export default function NotificationsScreen() {
   };
 
   const enabledCount = settings.filter((s) => s.enabled).length;
+
+  // Require authentication
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color={COLORS.espresso[500]}
+            />
+          </TouchableOpacity>
+          <Typography variant="h2" style={styles.headerTitle}>
+            Notifications
+          </Typography>
+          <View style={{ width: 24 }} />
+        </View>
+        <View style={styles.emptyContainer}>
+          <Ionicons
+            name="notifications-outline"
+            size={80}
+            color={COLORS.espresso[300]}
+          />
+          <Typography variant="h3" style={styles.emptyTitle}>
+            Sign in to manage notifications
+          </Typography>
+          <Typography variant="body" style={styles.emptyText}>
+            Create an account or sign in to customize your notification
+            preferences
+          </Typography>
+          <Button
+            onPress={() => router.push("/auth/login")}
+            style={styles.authButton}
+          >
+            Sign In
+          </Button>
+          <Button
+            onPress={() => router.push("/auth/register")}
+            variant="secondary"
+            style={styles.authButton}
+          >
+            Create Account
+          </Button>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (loading) {
     return (
@@ -596,5 +655,25 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: {
     height: SPACING["2xl"],
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING["2xl"],
+  },
+  emptyTitle: {
+    marginTop: SPACING.lg,
+    marginBottom: SPACING.sm,
+  },
+  emptyText: {
+    color: COLORS.text.muted,
+    textAlign: "center",
+    marginBottom: SPACING.xl,
+  },
+  authButton: {
+    minWidth: 200,
+    marginBottom: SPACING.md,
   },
 });

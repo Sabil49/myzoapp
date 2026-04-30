@@ -2,15 +2,16 @@
 import { Button } from "@/components/ui/Button";
 import { Typography } from "@/components/ui/Typography";
 import { COLORS, SPACING } from "@/constants/theme";
+import { useAppSelector } from "@/store/hooks";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  Linking,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    Linking,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -19,6 +20,63 @@ const DODO_PAYMENTS_URL =
 
 export default function PaymentMethodsScreen() {
   const router = useRouter();
+  const isAuthenticated = useAppSelector((state: any) =>
+    typeof state?.auth === "object" &&
+    state.auth !== null &&
+    "isAuthenticated" in state.auth
+      ? state.auth.isAuthenticated
+      : false,
+  );
+
+  // Require authentication
+  if (!isAuthenticated) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color={COLORS.espresso[500]}
+            />
+          </TouchableOpacity>
+          <Typography variant="h2" style={styles.headerTitle}>
+            Payment Methods
+          </Typography>
+          <View style={{ width: 24 }} />
+        </View>
+        <View style={styles.emptyContainer}>
+          <Ionicons
+            name="card-outline"
+            size={80}
+            color={COLORS.espresso[300]}
+          />
+          <Typography variant="h3" style={styles.emptyTitle}>
+            Sign in to manage payment methods
+          </Typography>
+          <Typography variant="body" style={styles.emptyText}>
+            Create an account or sign in to save your payment information
+          </Typography>
+          <Button
+            onPress={() => router.push("/auth/login")}
+            style={styles.authButton}
+          >
+            Sign In
+          </Button>
+          <Button
+            onPress={() => router.push("/auth/register")}
+            variant="secondary"
+            style={styles.authButton}
+          >
+            Create Account
+          </Button>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handleAddNew = async () => {
     try {
@@ -157,6 +215,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emptyContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: SPACING.xl,
@@ -170,6 +229,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: COLORS.text.muted,
     textAlign: "center",
+    marginBottom: SPACING.xl,
   },
   infoSection: {
     padding: SPACING.lg,
@@ -194,5 +254,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
     backgroundColor: COLORS.surface,
+  },
+  authButton: {
+    minWidth: 200,
+    marginBottom: SPACING.md,
   },
 });
